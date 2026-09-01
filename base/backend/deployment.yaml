@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: platform-launchpad
+  labels:
+    app.kubernetes.io/name: platform-launchpad-backend
+    app.kubernetes.io/part-of: platform-launchpad
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: platform-launchpad-backend
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: platform-launchpad-backend
+        app.kubernetes.io/part-of: platform-launchpad
+
+    spec:
+      serviceAccountName: backend
+
+      containers:
+        - name: backend
+          image: platform-launchpad-backend
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+
+          env:
+            - name: APP_ENVIRONMENT
+              value: development
+
+            - name: DEBUG
+              value: "false"
+
+            - name: DATABASE_URL_FILE
+              value: /mnt/secrets-store/database_url
+
+            - name: SECRET_KEY_FILE
+              value: /mnt/secrets-store/secret_key
+
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          volumeMounts:
+            - name: runtime-secrets
+              mountPath: /mnt/secrets-store
+              readOnly: true
+
+      volumes:
+        - name: runtime-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: platform-launchpad-runtime

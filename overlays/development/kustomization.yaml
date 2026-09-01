@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+patches:
+  - path: secretproviderclass-patch.yaml
+  - path: ingress-patch.yaml
+
+images:
+  - name: platform-launchpad-backend
+    newName: 201854077833.dkr.ecr.us-east-1.amazonaws.com/platform-launchpad-development-application
+    digest: sha256:REPLACE_BACKEND_DIGEST
+
+  - name: platform-launchpad-frontend
+    newName: 201854077833.dkr.ecr.us-east-1.amazonaws.com/platform-launchpad-development-application
+    digest: sha256:REPLACE_FRONTEND_DIGEST
