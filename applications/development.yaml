@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: platform-launchpad-development
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: platform-launchpad
+    app.kubernetes.io/part-of: platform-launchpad
+    app.kubernetes.io/environment: development
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/xtinead/platform-launchpad-gitops.git
+    targetRevision: main
+    path: overlays/development
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: platform-launchpad
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=false
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
