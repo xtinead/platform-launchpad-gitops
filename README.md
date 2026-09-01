@@ -285,7 +285,7 @@ us-east-1
 Application container repository:
 
 ```text
-201854077833.dkr.ecr.us-east-1.amazonaws.com/platform-launchpad-development-application
+.dkr.ecr.us-east-1.amazonaws.com/platform-launchpad-development-application
 ```
 
 Application hostname:
@@ -356,7 +356,7 @@ backend-sha-a1b2c3d4e5f6
 may identify a build in ECR, while Kubernetes ultimately consumes:
 
 ```text
-201854077833.dkr.ecr.us-east-1.amazonaws.com/platform-launchpad-development-application@sha256:<digest>
+.dkr.ecr.us-east-1.amazonaws.com/platform-launchpad-development-application@sha256:<digest>
 ```
 
 This provides:
