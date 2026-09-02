@@ -11,8 +11,8 @@ patches:
 images:
   - name: platform-launchpad-backend
     newName: 201854077833.dkr.ecr.us-east-1.amazonaws.com/platform-launchpad-development-application
-    digest: sha256:REPLACE_BACKEND_DIGEST
+    digest: sha256:8fcc3934649d9c330bc280bc4c3eda44ecbd58bfda9f4671b348aee984dde981
 
   - name: platform-launchpad-frontend
     newName: 201854077833.dkr.ecr.us-east-1.amazonaws.com/platform-launchpad-development-application
-    digest: sha256:REPLACE_FRONTEND_DIGEST
+    digest: sha256:59e5dedc5f4fd6c1de5c4f50147f333e784118583488587274d5bb0ce4c25cd6
