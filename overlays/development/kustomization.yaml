@@ -6,7 +6,6 @@ resources:
 
 patches:
   - path: secretproviderclass-patch.yaml
-  - path: ingress-patch.yaml
 
 images:
   - name: platform-launchpad-backend
