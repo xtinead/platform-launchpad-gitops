@@ -1,0 +1,33 @@
+clusterName: platform-launchpad-development-eks
+
+region: us-east-1
+
+vpcId: vpc-0b88df267f9d2ae28
+
+replicaCount: 2
+
+image:
+  repository: 201854077833.dkr.ecr.us-east-1.amazonaws.com/platform-launchpad-development-aws-load-balancer-controller
+  tag: v2.14.1
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  create: true
+  name: aws-load-balancer-controller
+
+rbac:
+  create: true
+
+ingressClass: alb
+
+createIngressClassResource: true
+
+ingressClassConfig:
+  default: false
+
+priorityClassName: system-cluster-critical
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
