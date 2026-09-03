@@ -1,0 +1,83 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-migration
+  namespace: platform-launchpad
+  labels:
+    app.kubernetes.io/name: platform-launchpad-database-migration
+    app.kubernetes.io/part-of: platform-launchpad
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 300
+
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: platform-launchpad-database-migration
+        app.kubernetes.io/part-of: platform-launchpad
+
+    spec:
+      restartPolicy: Never
+
+      serviceAccountName: backend
+
+      containers:
+        - name: migration
+          image: platform-launchpad-backend
+          imagePullPolicy: IfNotPresent
+
+          command:
+            - alembic
+
+          args:
+            - upgrade
+            - head
+
+          env:
+            - name: APP_ENVIRONMENT
+              value: development
+
+            - name: DEBUG
+              value: "false"
+
+            - name: DATABASE_URL_FILE
+              value: /mnt/secrets-store/database_url
+
+            - name: SECRET_KEY_FILE
+              value: /mnt/secrets-store/secret_key
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          volumeMounts:
+            - name: runtime-secrets
+              mountPath: /mnt/secrets-store
+              readOnly: true
+
+      volumes:
+        - name: runtime-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: platform-launchpad-runtime
